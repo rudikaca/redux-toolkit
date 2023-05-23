@@ -12,8 +12,25 @@ const initialState = {
 export const getCartItems =createAsyncThunk('cart/getCartItems', () => {
     return fetch(url)
         .then((response) => response.json())
-        .catch((error) => console.log(error))
+        .catch((error) => console.log(error.message))
 });
+
+
+// This is an option of createAsyncThunk (axios)
+
+// export const getCartItems = createAsyncThunk(
+//     'cart/getCartItems',
+//     async (_, thunkAPI) => {
+//         try {
+//             console.log("argument of getCartItems('test')", _);
+//             console.log("thunkAPI", thunkAPI);
+//             const response = await axios(url);
+//             return response.data;
+//         } catch (error) {
+//             return thunkAPI.rejectWithValue('There was an error...');
+//         }
+//     }
+// );
 
 const cartSlice = createSlice({
     name: 'cart',
@@ -50,11 +67,12 @@ const cartSlice = createSlice({
             state.isLoading = true;
         },
         [getCartItems.fulfilled]: (state, action) => {
-            console.log(action);
+            // console.log("data", action.payload);
             state.isLoading = false;
             state.cartItems = action.payload;
         },
-        [getCartItems.rejected]: (state) => {
+        [getCartItems.rejected]: (state, action) => {
+            console.log("error message", action);
             state.isLoading = false;
         }
     }
